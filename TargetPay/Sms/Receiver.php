@@ -70,19 +70,31 @@ class Receiver
      */
     protected $_operator;
     
-    /**
-     * The allowed IP of TargetSms.
-     * @var unknown
-     */
-    protected $_targetSmsIp = '89.184.168.65';
-    
-    /**
-     * The ok response code for TargetSMS.
-     * @var number
-     */
-    protected $_responseCode = 45000;
-    
 /******************** METHODS ********************/
+    
+    /**
+     * Construct the object.
+     * @param unknown $moMessageId
+     * @param unknown $shortCode
+     * @param unknown $moShortKey
+     * @param unknown $message
+     * @param unknown $sendTo
+     * @param unknown $operator
+     */
+    public function __construct($moMessageId,
+                                $shortCode,
+                                $moShortKey,
+                                $message,
+                                $sendTo,
+                                $operator)
+    {
+        $this->_moMessageId = $moMessageId;
+        $this->_shortCode   = $shortCode;
+        $this->_moShortKey  = $moShortKey;
+        $this->_message     = $message;
+        $this->_sendTo      = $sendTo;
+        $this->_operator    = $operator;
+    }
     
     /**
      * Set moMessageId.
@@ -209,28 +221,6 @@ class Receiver
     public function getOperator()
     {
         return $this->_operator;
-    }
-    
-    /**
-     * Check if the request is comming from TargetSMS.
-     * @param string $ip
-     * @return boolean
-     */
-    public function isTargetSmsIp($ip = '')
-    {
-        if ($this->_targetSmsIp === $ip) {
-            return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Get the TargetSMS required responsecode.
-     * @return number
-     */
-    public function getResponseCode()
-    {
-        return $this->_responseCode;
     }
     
     /**

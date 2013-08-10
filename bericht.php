@@ -45,9 +45,7 @@ $receiver->setMoMessageId($_GET['MO_MessageId'])
  * User instance.
  * Set the username and your handle key.
  */
-$user = new Sms\User();
-$user->setUsername('your username')
-     ->setHandle('your hash');
+$user = new Sms\User('your username', 'your hash');
 
 /**
  * NonSubscription instance.

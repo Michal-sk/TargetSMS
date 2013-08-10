@@ -23,6 +23,17 @@ class User
     protected $_handle;
     
     /**
+     * Construct object.
+     * @param unknown $username
+     * @param unknown $handle
+     */
+    public function __construct($username, $handle)
+    {
+        $this->_username = $username;
+        $this->_handle   = $handle;
+    }
+    
+    /**
      * Set the username.
      * @param string $username
      */

@@ -165,7 +165,7 @@ class Receiver
     public function getMessage($removeShortKey = true)
     {
         if ($removeShortKey) {
-            return preg_replace('|' . $this->_moShortKey . '|', '', $this->_message);
+            return preg_replace('|' . $this->_moShortKey . '|i', '', $this->_message);
         }
         
         return $this->_message;

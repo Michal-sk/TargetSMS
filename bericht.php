@@ -56,7 +56,7 @@ $user->setUsername('your username')
 $nonSubscription = new Subscriptions\NonSubscription($receiver, $user);
 
 $nonSubscription->setTariff(25)
-                ->setText('Uw inzending is ontvangen.')
+                ->setText('Thank you.')
                 ->setQuery()
                 ->init();
 
@@ -67,6 +67,6 @@ if (isset($nonSubscriptionResponse)
 ) {
     print '<br>' . $nonSubscriptionResponse . ' ' . $errorMessage;
 
-    doLog('nonSubscripionStatus.txt', $nonSubscriptionResponse . ' ' . $errorMessage);
+    //doLog('nonSubscripionStatus.txt', $nonSubscriptionResponse . ' ' . $errorMessage);
     die;
 }

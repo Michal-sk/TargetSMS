@@ -215,7 +215,7 @@ abstract class AbstractSubscription
      */
     public function cleanText($msg = '')
     {
-        return preg_replace("/[^a-z \d\+\%\#\(\)\*\+\,\.\-\/\:\;\<\=\>\?\_£¥§ÄÅÜäèéìñòöùü\]]/i", "", $msg);
+        return preg_replace('/[^a-z \d\+\%\#\(\)\*\+\,\.\-\/\:\;\<\=\>\?\_£¥§ÄÅÜäèéìñòöùü\]]/i', '', $msg);
     }
     
     /**

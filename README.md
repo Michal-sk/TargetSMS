@@ -2,5 +2,5 @@ TargetSMS
 =========
 
 Communicate with the TargetSMS api
- * http://targetsms.com
- * http://targetpay.com
+ * http://www.targetsms.com
+ * http://www.targetpay.com

@@ -59,9 +59,11 @@ $user = new Sms\User('USERNAME', 'HANDLE KEY');
 Initiate Subscription. The Subscription object needs the following to instances:
 * Receiver instance of TargetPay\Sms\Receiver
 * User instance of TargetPay\Sms\User
+
 The Subscription object needs to have:
 * Tariff, the amount which is going to be billed in cents in your currency.
 * Text, the text message which will be send to the customer.
+
 ```php
 $nonSubscription = new Subscriptions\NonSubscription($receiver, $user);
 

@@ -263,6 +263,10 @@ abstract class AbstractSubscription
      */
     public function init()
     {
+        if (empty($this->_query)) {
+            $this->setQuery();
+        }
+        
         $api = $this->_targetSmsApi . $this->getQuery();
         $headers = array("User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.8) Gecko/20061025 Firefox/1.5.0.8");
         

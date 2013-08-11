@@ -72,8 +72,7 @@ $nonSubscription = new Subscriptions\NonSubscription(
     'Thank you message'
 );
 
-$nonSubscription->setQuery()
-                ->init();
+$nonSubscription->init();
 
 $nonSubscriptionResponse = $nonSubscription->getResponse();
 

@@ -164,7 +164,8 @@ abstract class AbstractSubscription
      */
     public function __construct(Sms\Receiver $receiver,
                                 Sms\User $user,
-                                $tariff = 0)
+                                $tariff,
+                                $text)
     {
         //TargetSMS mandatory fields.
         $this->_username    = $user->getUsername();
@@ -173,6 +174,8 @@ abstract class AbstractSubscription
         $this->_shortCode   = $receiver->getShortCode();
         $this->_sendTo      = $receiver->getSendTo();
         $this->_moMessageId = $receiver->getMoMessageId();
+        $this->_tariff      = $tariff;
+        $this->_text        = $this->setText($text);
     }
     
     /**

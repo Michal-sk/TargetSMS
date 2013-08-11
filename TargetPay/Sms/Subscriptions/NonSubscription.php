@@ -10,17 +10,7 @@ namespace TargetPay\Sms\Subscriptions;
 use TargetPay\Sms\Subscriptions\AbstractSubscription;
 
 class NonSubscription extends AbstractSubscription
-{
-    /**
-     * Set the tariff.
-     * @see \TargetPay\Sms\AbstractSubscription::setTariff()
-     */
-    public function setTariff($int = 0)
-    {
-        $this->_tariff = $int;
-        return $this;
-    }
-    
+{    
     /**
      * Set data for the TargetSMS api.
      * @return \TargetPay\Sms\Subscriptions\NonSubscription

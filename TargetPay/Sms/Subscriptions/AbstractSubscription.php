@@ -8,7 +8,7 @@
  * Send back each message trough POST to the following location:
  *  http://api.targetsms.nl/ps_handler/sendmessagev2.asp
  *  
- * Example of complete POST request:
+ * Example of complete POST request (non-subscription):
  *  http://api.targetsms.nl/ps_handler/sendmessagev2.asp?
  *      username=test
  *      &handle=d6861a8f6697a28fe7d92c586178ce55
@@ -175,19 +175,23 @@ abstract class AbstractSubscription
         $this->_sendTo      = $receiver->getSendTo();
         $this->_moMessageId = $receiver->getMoMessageId();
         $this->_tariff      = $tariff;
-        $this->_text        = $this->setText($text);
+        $this->_text        = $this->cleanText($text);
     }
-    
-    /**
-     * Set the tariff to be payed. Value needs to be in cents.
-     * @param number $int
-     */
-    abstract function setTariff($int = 0);
     
     /**
      * Set the query data for the TargetSMS api.
      */
     abstract function setQuery();
+    
+    /**
+     * Set the tariff to be payed. Value needs to be in cents.
+     * @param number $int
+     */
+    public function setTariff($int = 0)
+    {
+        $this->_tariff = $int;
+        return $this;
+    }
     
     /**
      * Get the TargetSMS api.
@@ -205,9 +209,7 @@ abstract class AbstractSubscription
     public function setText($msg = '')
     {
         $msg = $this->cleanText($msg);
-        
         $this->_text = $msg;
-        return $this;
     }
 
     /**
@@ -266,7 +268,7 @@ abstract class AbstractSubscription
         if (empty($this->_query)) {
             $this->setQuery();
         }
-        
+
         $api = $this->_targetSmsApi . $this->getQuery();
         $headers = array("User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.8) Gecko/20061025 Firefox/1.5.0.8");
         

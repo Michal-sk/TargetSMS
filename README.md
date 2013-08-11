@@ -65,11 +65,14 @@ The Subscription object needs to have:
 * Text, the text message which will be send to the customer.
 
 ```php
-$nonSubscription = new Subscriptions\NonSubscription($receiver, $user);
+$nonSubscription = new Subscriptions\NonSubscription(
+    $receiver,
+    $user
+    25,
+    'Thank you message'
+);
 
-$nonSubscription->setTariff(25)
-                ->setText('Uw inzending is ontvangen.')
-                ->setQuery()
+$nonSubscription->setQuery()
                 ->init();
 
 $nonSubscriptionResponse = $nonSubscription->getResponse();

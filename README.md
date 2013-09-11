@@ -10,8 +10,9 @@ Usage
 Start with including all the required classes. Basic concept of this is:
 ```php
 require_once 'TargetPay/Sms/TargetSms.php';
-require_once 'TargetPay/Sms/Receiver.php';
 require_once 'TargetPay/Sms/User.php';
+require_once 'TargetPay/Sms/Handler/AbstractHandler.php';
+require_once 'TargetPay/Sms/Handler/NonSubscription.php';
 require_once 'TargetPay/Sms/Subscriptions/AbstractSubscription.php';
 require_once 'TargetPay/Sms/Subscriptions/NonSubscription.php';
 ```
@@ -21,6 +22,7 @@ Declare the namespaces
 ```php
 use TargetPay\Sms;
 use TargetPay\Sms\Subscriptions;
+use TargetPay\Sms\Handler;
 ```
 
 Initiate a new TargetSms object. This allowes you to check if the request is
@@ -38,16 +40,18 @@ if (! $targetSms->isAllowedIp($_SERVER['REMOTE_ADDR'])) {
 print $targetSms->getResponseCode();
 ```
 
-Iniate a Receiver
+Iniate a Receiver. This should be data from the $_GET. Always clean the data before it's passed
+to the object. This has been omitted in the example.
 ```php
-$receiver = new Sms\Receiver(
-    $_GET['MO_MessageId'],
-    $_GET['ShortCode'],
-    $_GET['MO_ShortKey'],
-    $_GET['Message'],
-    $_GET['SendTo'],
-    $_GET['operator']
-);
+/**
+* $_GET['MO_MessageId'],
+* $_GET['ShortCode'],
+* $_GET['MO_ShortKey'],
+* $_GET['Message'],
+* $_GET['SendTo'],
+* $_GET['operator']
+*/
+$handler = new Handler\NonSubscription($_GET);
 ```
 
 Iniate a User. Set your username and your handle key. The key can be found at:
@@ -66,13 +70,16 @@ The Subscription object needs to have:
 
 ```php
 $nonSubscription = new Subscriptions\NonSubscription(
-    $receiver,
+    $handler,
     $user
     25,
     'Thank you message'
 );
 
-$nonSubscription->init();
+$nonSubscription
+    ->setQuery()
+    ->setApiUrl()
+    ->init();
 
 $nonSubscriptionResponse = $nonSubscription->getResponse();
 

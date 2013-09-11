@@ -104,13 +104,19 @@ abstract class AbstractSubscription
     protected $_text;
     
     /**
-     * The qurey send to the TargetPay api.
+     * The buil query send to the TargetPay api.
      * @var unknown
      */
     protected $_query;
     
     /**
+     * Array with all the query data to use in http_build_query.
+     */
+    protected $_queryData = array();
+    
+    /**
      * Return message id in the response.
+    protected $_queryData = array();
      * Add this parameter with value ‘yes’ when you want to receive the MT message ID in the response.
      * You may use this ID in receiving your billing status.
      * @var varchar
@@ -149,6 +155,12 @@ abstract class AbstractSubscription
     protected $_response;
     
     /**
+     * The complete api url with query attached.
+     * @var unknown
+     */
+    public $apiUrl;
+    
+    /**
      * Test option.
      * @var unknown
      */
@@ -162,7 +174,7 @@ abstract class AbstractSubscription
      * @param TargetPay\Sms\User        $username
      * @param number                    $tarif
      */
-    public function __construct(Sms\Receiver $receiver,
+    public function __construct(Sms\Handler\AbstractHandler $handler,
                                 Sms\User $user,
                                 $tariff,
                                 $text)
@@ -170,10 +182,10 @@ abstract class AbstractSubscription
         //TargetSMS mandatory fields.
         $this->_username    = $user->getUsername();
         $this->_handle      = $user->getHandle();
-        $this->_shortKey    = $receiver->getMoShortKey();
-        $this->_shortCode   = $receiver->getShortCode();
-        $this->_sendTo      = $receiver->getSendTo();
-        $this->_moMessageId = $receiver->getMoMessageId();
+        $this->_shortKey    = $handler->getMoShortKey();
+        $this->_shortCode   = $handler->getShortCode();
+        $this->_sendTo      = $handler->getSendTo();
+        $this->_moMessageId = $handler->getMoMessageId();
         $this->_tariff      = $tariff;
         $this->_text        = $this->cleanText($text);
     }
@@ -181,7 +193,42 @@ abstract class AbstractSubscription
     /**
      * Set the query data for the TargetSMS api.
      */
-    abstract function setQuery();
+    public function setQuery()
+    {
+        if (empty($this->_queryData)) {
+            throw new \Exception('Query data is not set.');
+            return;
+        }
+        
+        $this->_query = http_build_query($this->_queryData, '', '&');
+    }
+    
+    /**
+     * Get the valid build query.
+     * @return string
+     */
+    public function getQuery()
+    {
+        return $this->_query;
+    }
+    
+    /**
+     * Set complete build api url.
+     */
+    public function setApiUrl()
+    {
+        $this->apiUrl = rtrim($this->_targetSmsApi, '?') . '?' . $this->getQuery();
+        
+        return $this;
+    }
+    
+    /**
+     * Get complete build api url.
+     */
+    public function getApiUrl()
+    {
+        return $this->apiUrl;
+    }
     
     /**
      * Set the tariff to be payed. Value needs to be in cents.
@@ -224,34 +271,6 @@ abstract class AbstractSubscription
     }
     
     /**
-     * Get the valid build query.
-     * @return string
-     */
-    public function getQuery()
-    {
-        $query  = '';
-        $params = $this->_query;
-        $last   = count($params);
-        $count  = 0;
-        
-        foreach ($params as $key => $param) {
-            $count++;
-            
-            //Urlencode the query values.
-            $key    = urlencode($key);
-            $param  = urlencode($param);
-            
-            $query .= $key . '=' . $param;
-        
-            if ($count != $last) {
-                $query .= '&';
-            }
-        }
-        
-        return '?' . $query;
-    }
-    
-    /**
      * Check if curl is installed.
      * @return boolean
      */
@@ -261,31 +280,41 @@ abstract class AbstractSubscription
     }
     
     /**
+     * Iniate curl. Set the _response.
+     * @param unknown $apiUrl
+     * @return \TargetPay\Sms\Subscriptions\unknown
+     */
+    public function initCurl()
+    {
+        $api     = $this->apiUrl;
+        $ch      = curl_init();
+        $headers = array("User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.8) Gecko/20061025 Firefox/1.5.0.8");
+        
+        //curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_URL, $api);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        
+        $this->_response = curl_exec($ch);
+        curl_close($ch);
+        
+        return $this->_response;
+    }
+    
+    /**
      * Iniate the object.
      */
     public function init()
     {
-        if (empty($this->_query)) {
-            $this->setQuery();
-        }
-
-        $api = $this->_targetSmsApi . $this->getQuery();
-        $headers = array("User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.8) Gecko/20061025 Firefox/1.5.0.8");
+        $response = null;
         
         if ($this->isCurl()) {
-            //We have curl.
-            $ch = curl_init();
-
-            //curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_URL, $api);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            
-            $this->_response = curl_exec($ch); 
-            curl_close($ch);
-            
-            return $this;
+            $response = $this->initCurl();
+        } else {
+            throw new \Exception('No method found to initiate the Api call with.');
         }
+        
+        return $response;
     }
     
     /**
@@ -309,6 +338,10 @@ abstract class AbstractSubscription
         return $this->_response;
     }
     
+    /**
+     * To string method for logging purposses.
+     * @return string
+     */
     public function __toString()
     {
         $vars = get_object_vars($this);

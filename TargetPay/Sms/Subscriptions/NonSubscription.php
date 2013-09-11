@@ -15,11 +15,8 @@ class NonSubscription extends AbstractSubscription
      * Set data for the TargetSMS api.
      * @return \TargetPay\Sms\Subscriptions\NonSubscription
      */
-    public function setQuery()
-    {
-        $this->_query = array(
-            'username'      => $this->_username,
-            'handle'        => $this->_handle,
+    public function setQuery() {
+        $this->_queryData = array(
             'shortkey'      => $this->_shortKey,
             'shortcode'     => $this->_shortCode,
             'sendto'        => $this->_sendTo,
@@ -28,7 +25,9 @@ class NonSubscription extends AbstractSubscription
             'tariff'        => $this->_tariff,
             'test'          => $this->test,
         );
-    
+        
+        parent::setQuery();
+        
         return $this;
     }
 }

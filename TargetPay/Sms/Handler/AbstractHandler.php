@@ -3,26 +3,16 @@
  * Receiver class for TargetPay SMS.
  * 
  * Documentation can be found @ http://www.targetsms.nl/docs/TS001-NonSubscription.pdf.
- * 
- * Example of complete request:
- *  http://www.example.com/smshandler.php?
- *      SendTo=31612345678
- *      &Message=WEB+SMS+TEST
- *      &ShortCode=3010
- *      &MO_MessageId=534048699
- *      &operator=02F480
- *      &MO_ShortKey=WEB+SMS
+ * Documentation can be found @ http://www.targetsms.nl/docs/TS002-Subscription.pdf.
  * 
  * The SMS gateway expects a responsecode of 45000.
- * 
- * Documentation can be found @ http://www.targetsms.nl/docs/TS001-NonSubscription.pdf
  * 
  * @author Michal Skrzypecki
  */
 
-namespace TargetPay\Sms;
+namespace TargetPay\Sms\Handler;
 
-class Receiver
+class AbstractHandler
 {
     
 /******************** VARIABLES ********************/
@@ -70,31 +60,14 @@ class Receiver
      */
     protected $_operator;
     
-/******************** METHODS ********************/
-    
     /**
-     * Construct the object.
-     * @param unknown $moMessageId
-     * @param unknown $shortCode
-     * @param unknown $moShortKey
-     * @param unknown $message
-     * @param unknown $sendTo
-     * @param unknown $operator
-     */
-    public function __construct($moMessageId,
-                                $shortCode,
-                                $moShortKey,
-                                $message,
-                                $sendTo,
-                                $operator)
-    {
-        $this->_moMessageId = $moMessageId;
-        $this->_shortCode   = $shortCode;
-        $this->_moShortKey  = $moShortKey;
-        $this->_message     = $message;
-        $this->_sendTo      = $sendTo;
-        $this->_operator    = $operator;
-    }
+     * Switch the subscription on or off.
+     * Possible values on, ok, off, rejoin.
+     * @var varchar
+     */    
+    protected $_onoff;
+    
+/******************** METHODS ********************/
     
     /**
      * Set moMessageId.
@@ -176,11 +149,13 @@ class Receiver
      */
     public function getMessage($removeShortKey = true)
     {
+        $msg = $this->_message;
+        
         if ($removeShortKey) {
-            return preg_replace('|' . $this->_moShortKey . '|i', '', $this->_message);
+            $msg = preg_replace('|' . $this->_moShortKey . '|i', '', $msg);
         }
         
-        return $this->_message;
+        return $msg;
     }
     
     /**
@@ -188,7 +163,7 @@ class Receiver
      * @param number $int
      * @return \TargetPay\Sms\Reciever
      */
-    public function setSendTo($int = 0)
+    public function setSendTo($int)
     {
         $this->_sendTo = $int;
         return $this;
@@ -208,7 +183,7 @@ class Receiver
      * @param number $int
      * @return number
      */
-    public function setOperator($int = 0)
+    public function setOperator($int)
     {
         $this->_operator = $int;
         return $this;
